@@ -56,6 +56,24 @@ RUN $INST_SCRIPTS/libnss_wrapper.sh
 ADD ./src/common/scripts $STARTUPDIR
 RUN $INST_SCRIPTS/set_user_permission.sh $STARTUPDIR $HOME
 
+### Install davfs2 start
+RUN apt-get update -yqq
+RUN apt-get install rsync -yqq
+RUN apt-get install davfs2 -yqq
+ENV WEBDAV_USER user
+ENV WEBDAV_PASSWORD password
+ENV WEBDAV_URL http://example.com
+ENV MOUNT_PATH /home
+
+RUN mkdir -p /etc/my_init.d
+ADD startMount.sh /etc/my_init.d/startMount.sh
+RUN chmod +x /etc/my_init.d/startMount.sh
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+### Install davfs2 end
+
+
 USER 1984
 
 ENTRYPOINT ["/dockerstartup/vnc_startup.sh"]
